@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "117635923753",
+    "firebase_url": "https://kishtum-88172.firebaseio.com",
+    "project_id": "kishtum-88172",
+    "storage_bucket": "kishtum-88172.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:117635923753:android:0340c82f8ca2a6ad0e4138",
+        "android_client_info": {
+          "package_name": "EnigmaTek.Inc.Kishtum"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "117635923753-nj8ac3f89nramrqakt5mus8ia3625932.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDcvlxA2tHkYZ3OEdXX-XiuGxCN7yQs5p8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "117635923753-nj8ac3f89nramrqakt5mus8ia3625932.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
