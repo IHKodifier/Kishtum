@@ -11,6 +11,7 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
+  bool isBusy=false;
   //  FirebaseAuth _instance = FirebaseAuth.instance;
   String email, password;
 
@@ -18,7 +19,8 @@ class _LoginFormState extends State<LoginForm> {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 32, vertical: 4),
-      child: Material(
+      child: this.isBusy? showLoadingSpinner():
+      Material(
         elevation: 5,
         color: Colors.white70,
         child: Padding(
@@ -27,6 +29,7 @@ class _LoginFormState extends State<LoginForm> {
             children: [
               SizedBox(height: 50),
               TextField(
+                // keyboardType: email,
                 decoration: InputDecoration(
                   hintText: 'enter email',
                   labelText: 'Email',
@@ -41,6 +44,7 @@ class _LoginFormState extends State<LoginForm> {
                   hintText: 'enter password',
                   labelText: 'Password',
                 ),
+                obscureText: true,
                 onChanged: (value) {
                   password = value;
                 },
@@ -69,12 +73,30 @@ class _LoginFormState extends State<LoginForm> {
       ),
     );
   }
+Widget  showLoadingSpinner(){
+  return Center(
+    child: CircularProgressIndicator(),
+  );
+}
+
+
+
+
+
 
   void attemptLogin(String email, String password) async {
+    setState(() {
+    this.isBusy=true;
+      
+    });
     await Firebase.initializeApp();
     var attemptedUser = await FirebaseAuth.instance
         .signInWithEmailAndPassword(email: email, password: password);
     if (attemptedUser != null) {
+      setState(() {
+      this.isBusy=false;
+        
+      });
       print('\nlogin success');
       Navigator.of(context).pop();
       Navigator.of(context).push(

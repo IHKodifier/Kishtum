@@ -10,6 +10,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // This is the theme of your application.
+        // appBarTheme: Theme.of(context).appBarTheme.copyWith(color: Theme.of(context).scaffoldBackgroundColor),
+        // textTheme: Theme.of(context).appBarTheme
+        // iconTheme: Theme.of(context).appBarTheme.iconTheme.copyWith(color:Theme.of(context).primaryColor),
         //
         // Try running your application with "flutter run". You'll see the
         // application has a blue toolbar. Then, without quitting the app, try
@@ -24,6 +27,11 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
         buttonColor: Theme.of(context).primaryColor,
+        sliderTheme: Theme.of(context).sliderTheme.copyWith(
+          
+      
+        ),
+        // textTheme: Theme.of(context).textTheme.copyWith(color:)
         
       ),
       home: LoginPage(),
