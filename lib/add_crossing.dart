@@ -20,11 +20,7 @@ class _AddCrossingState extends State<AddCrossing> {
     'Karak chungi'
   ];
   String selectedGate;
-  double numberOfWheels = 6;
-  double emptyWeightTons = 0;
-  double emptyWeightKilos = 0;
-  double cargoWeightTons = 0;
-  double cargoWeightKilos = 0;
+
   List<String> _crossingType = [
     'Import',
     'Export',
@@ -46,18 +42,20 @@ class _AddCrossingState extends State<AddCrossing> {
   List<String> _clearingAgents = [
     'Khushal Agency',
     'Immad port services',
-    'afridi custom agency',
+    'ACS-Afridi custom Services',
+    'Shinwari Custom Clearance',
     'Naya sawera agency',
     'Orya Maqbool Jan Agency',
     'Wazir Port services company'
   ];
   String _selectedAgent;
   DocumentReference currentDocRef = null;
-  TextEditingController _letterController=TextEditingController();
-  TextEditingController _digitController=TextEditingController();
-  TextEditingController _driverNameController=TextEditingController();
-  TextEditingController _driverContactController=TextEditingController();
+  TextEditingController _letterController = TextEditingController();
+  TextEditingController _digitController = TextEditingController();
+  TextEditingController _driverNameController = TextEditingController();
+  TextEditingController _driverContactController = TextEditingController();
   Map<String, dynamic> crossingDataMap = Map<String, dynamic>();
+  double _wheels = 0, _baseWeight = 0, _grossWeight = 0, _cargoWeight = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -68,117 +66,144 @@ class _AddCrossingState extends State<AddCrossing> {
           title: Text('Add crossing'),
         ),
         body: SingleChildScrollView(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  width: double.infinity,
-                  child: Card(
-                    // shape: Border.c
-                    elevation: 5,
-                    child: Column(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              children: [
+                locationDetails(),
+                vehicleIdentification(),
+                Card(
+                  elevation: 5,
+                  child: Container(
+                    height: 280,
+                    width: double.infinity,
+                    child: Wrap(
                       children: [
-                        gateDropdown(),
-                        importExportButtons(),
+                        buildWheelerSpinbox(),
+                        buildBaseWeightSpinner(),
+                        buildGrossWeightSpinner(),
+                        (this._grossWeight - this._baseWeight <= 0)
+                            ? Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  'GROSS Weight cannot be less than base weight',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText2
+                                      .copyWith(color: Colors.red),
+                                ),
+                              )
+                            : Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                    'Cargo Weight (Kg) :   ${(this._grossWeight - this._baseWeight).ceil()}'),
+                              )
                       ],
                     ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  elevation: 5,
-                  child: Column(
-                    children: [
-                      registrationNumber(),
-                      driverNameBuilder(),
-                      agent(),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  elevation: 5,
-                  child: Column(
-                    children: [
-                      Text(
-                        'vehicle Details',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline6
-                            .copyWith(color: Theme.of(context).primaryColor),
-                      ),
-                      wheelSpinBox(),
-                      Text(
-                        'Empty weight in KG?',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyText2
-                            .copyWith(color: Theme.of(context).primaryColor),
-                      ),
-                      Container(
-                        // color: Theme.of(context).primaryColorDark,
-                        padding: EdgeInsets.all(8),
-                        child: SpinBox(
-                          min: 1,
-                          max: 99000,
-                          value: 2000,
-                          onChanged: (value) => print(value),
+
+                // baseWeight(context),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Card(
+                    elevation: 5,
+                    child: Column(
+                      children: [
+                        Text(
+                          'Cargo items',
+                          style: Theme.of(context).textTheme.headline6.copyWith(
+                                color: Theme.of(context).primaryColor,
+                                fontSize: 18,
+                              ),
                         ),
-                      ),
-                      SizedBox(height: 4),
-                    ],
+                        cargoContainer(),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Card(
-                  elevation: 5,
-                  child: Column(
-                    children: [
-                      Text(
-                        'Cargo details',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headline6
-                            .copyWith(color: Theme.of(context).primaryColor),
-                      ),
-                      Text(
-                        'Gross weight (in KG)',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyText2
-                            .copyWith(color: Theme.of(context).primaryColor),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SpinBox(
-                          min: 1,
-                          max: 20000,
-                          value: 1000,
-                          onChanged: (value) => print(value),
-                        ),
-                      ),
-                      Text(
-                        'Cargo items',
-                        style: Theme.of(context).textTheme.headline6.copyWith(
-                              color: Theme.of(context).primaryColor,
-                              fontSize: 18,
-                            ),
-                      ),
-                      cargoContainer(),
-                    ],
-                  ),
-                ),
-              ),
-              myButtonsBar(),
+                myButtonsBar(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding locationDetails() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        width: double.infinity,
+        child: Card(
+          elevation: 5,
+          child: Column(
+            children: [
+              gateDropdown(),
+              importExportDropdown(),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Padding vehicleIdentification() {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        elevation: 5,
+        child: Column(
+          children: [
+            registrationNumber(),
+            agent(),
+            driverNameBuilder(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Padding baseWeight(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 64,
+        vertical: 4,
+      ),
+      child: Card(
+        elevation: 5,
+        child: Column(
+          children: [
+            Text(
+              'vehicle Details',
+              style: Theme.of(context)
+                  .textTheme
+                  .headline6
+                  .copyWith(color: Theme.of(context).primaryColor),
+            ),
+            wheelSpinBox(),
+            Text(
+              'Base weight (Kg)',
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText2
+                  .copyWith(color: Theme.of(context).primaryColor),
+            ),
+            Container(
+              // color: Theme.of(context).primaryColorDark,
+              padding: EdgeInsets.all(8),
+              child: SpinBox(
+                min: 5000,
+                max: 99000,
+                value: 1000,
+                onChanged: (value) {
+                  _baseWeight = value;
+                },
+              ),
+            ),
+            SizedBox(height: 4),
+          ],
         ),
       ),
     );
@@ -202,11 +227,8 @@ class _AddCrossingState extends State<AddCrossing> {
 
   gateDropdown() {
     return Padding(
-        padding: const EdgeInsets.all(12.0),
+        padding: const EdgeInsets.symmetric(horizontal: 32),
         child: Container(
-          // height: 50,
-          // fallbackWidth: 50,
-          // color: Theme.of(context).primaryColorLight,
           child: DropdownButton(
             dropdownColor: Theme.of(context).primaryColorLight,
             items: _gatesList
@@ -289,6 +311,7 @@ class _AddCrossingState extends State<AddCrossing> {
         // width: 100,
         padding: EdgeInsets.all(4),
         child: TextField(
+          keyboardType: TextInputType.phone,
           decoration: TEXTINPUTDECORATION.copyWith(
             fillColor: Theme.of(context).primaryColorLight.withAlpha(120),
             labelText: 'Driver contact number',
@@ -304,6 +327,7 @@ class _AddCrossingState extends State<AddCrossing> {
         width: 90,
         padding: EdgeInsets.all(4),
         child: TextField(
+          // keyboardType: TextInputType.,
           decoration: TEXTINPUTDECORATION.copyWith(
             fillColor: Theme.of(context).primaryColorLight.withAlpha(120),
             labelText: 'Letters',
@@ -318,6 +342,7 @@ class _AddCrossingState extends State<AddCrossing> {
       // height: 50,
       padding: EdgeInsets.all(4),
       child: TextField(
+        keyboardType: TextInputType.number,
         decoration: TEXTINPUTDECORATION.copyWith(
           fillColor: Theme.of(context).primaryColorLight.withAlpha(120),
           labelText: 'Digits',
@@ -329,7 +354,7 @@ class _AddCrossingState extends State<AddCrossing> {
 
   wheelSpinBox() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(16.0),
       child: Container(
         // height: 100,
         width: double.infinity,
@@ -337,12 +362,22 @@ class _AddCrossingState extends State<AddCrossing> {
         child: Column(
           children: [
             Text(
-              'Number of wheels: ${this.numberOfWheels.ceil().toString()}',
+              'Number of wheels: ${this._wheels.toString()}',
               style: Theme.of(context).textTheme.bodyText2.copyWith(
                     color: Theme.of(context).primaryColor,
                   ),
             ),
-            SpinBox(),
+            SpinBox(
+              min: 4,
+              max: 22,
+              onChanged: (val) {
+                setState(() {
+                  this._wheels = val;
+                });
+              },
+              direction: Axis.vertical,
+              value: this._wheels,
+            ),
           ],
         ),
       ),
@@ -385,8 +420,9 @@ class _AddCrossingState extends State<AddCrossing> {
     );
   }
 
-  importExportButtons() {
+  importExportDropdown() {
     return DropdownButton(
+      dropdownColor: Theme.of(context).primaryColorLight,
       hint: Text(
         'Crossing Type',
         style: Theme.of(context)
@@ -418,6 +454,7 @@ class _AddCrossingState extends State<AddCrossing> {
 
   city() {
     return DropdownButton(
+      dropdownColor: Theme.of(context).primaryColorLight,
       hint: Text(
         'Location',
         style: Theme.of(context)
@@ -449,6 +486,8 @@ class _AddCrossingState extends State<AddCrossing> {
 
   agent() {
     return DropdownButton(
+      dropdownColor: Theme.of(context).primaryColorLight,
+      isDense: true,
       hint: Text(
         'Clearing Agent',
         style: Theme.of(context)
@@ -478,36 +517,25 @@ class _AddCrossingState extends State<AddCrossing> {
     );
   }
 
-  // getFormData() {
-  //   this.crossingDataMap = {
-  //     'crossingGate': this.selectedGate,
-  //     'crossingType': this._selectedCrossingType,
-  //     'registration': this._letterController.text +
-  //         '-' +
-  //         this._digitController.text +
-  //         '-' +
-  //         this._selectedLocation,
-  //     'driverName': this._driverNameController.text,
-  //     'driverContact': this._driverContactController.text,
-  //     'clearingAgent': this._selectedAgent,
-  //     'crossingDate': DateTime.now(),
-  //     'logCreatedBy': 'AqleemKhattak@Gmail.com',
-  //   };
-  //   print(this.crossingDataMap.toString());
-  // }
-
   saveCrossing() async {
     this.currentDocRef =
         FirebaseFirestore.instance.collection('Crossing').doc();
     // getFormData();
-  //  print(_letterController.text);
-    String fullregNumber = this._letterController.value.text.toUpperCase() +this._digitController.value.text +'-'+this._selectedLocation;
+    //  print(_letterController.text);
+    String fullregNumber = this._letterController.value.text.toUpperCase() +
+        this._digitController.value.text +
+        '-' +
+        this._selectedLocation;
     print('registration number = $fullregNumber');
     await this.currentDocRef.set({
       'registration': fullregNumber,
       'driverName': this._driverNameController.text,
       'driverContact': this._driverContactController.text,
       'clearingAgent': this._selectedAgent,
+      'wheeler': this._wheels,
+      'baseWeight': this._baseWeight,
+      'grossWeight': this._grossWeight,
+      'cargoWeight': this._grossWeight - this._baseWeight,
       'crossingGate': this.selectedGate,
       'crossingType': this._selectedCrossingType,
       'crossingDate': DateTime.now(),
@@ -515,7 +543,105 @@ class _AddCrossingState extends State<AddCrossing> {
     }).then((value) {
       print('record added');
       Navigator.of(context).pop();
-    }
+    });
+  }
+
+  buildWheelerSpinbox() {
+    return Container(
+      width: 110,
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Card(
+          elevation: 5,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  'Total Number of wheels',
+                  textAlign: TextAlign.center,
+                ),
+                // child: Text('Vehicle Details'),
+              ),
+              SpinBox(
+                direction: Axis.vertical,
+                min: 0,
+                max: 22,
+                value: this._wheels,
+                onChanged: (val) {
+                  setState(() {
+                    this._wheels = val;
+                  });
+                },
+              ),
+            ],
+          )),
+    );
+  }
+
+  buildBaseWeightSpinner() {
+    return Container(
+      width: 110,
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Card(
+          elevation: 5,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  'Base weight (Kg)',
+                  textAlign: TextAlign.center,
+                ),
+                // child: Text('Vehicle Details'),
+              ),
+              SpinBox(
+                direction: Axis.vertical,
+                min: 0,
+                max: 130000,
+                value: this._baseWeight,
+                onChanged: (val) {
+                  setState(() {
+                    this._baseWeight = val;
+                  });
+                },
+              ),
+            ],
+          )),
+    );
+  }
+
+  buildGrossWeightSpinner() {
+    return Container(
+      width: 110,
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      child: Card(
+          elevation: 5,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8),
+                child: Text(
+                  'GROSS weight (Kg)',
+                  textAlign: TextAlign.center,
+                ),
+                // child: Text('Vehicle Details'),
+              ),
+              SpinBox(
+                direction: Axis.vertical,
+                min: 0,
+                max: 130000,
+                value: this._grossWeight,
+                onChanged: (val) {
+                  setState(() {
+                    this._grossWeight = val;
+                  });
+                },
+              ),
+            ],
+          )),
     );
   }
 }
