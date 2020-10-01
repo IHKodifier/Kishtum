@@ -79,11 +79,7 @@ class _HomePageState extends State<HomePage> {
                 return Padding(
                   padding: const EdgeInsets.only(left: 8, right: 8, top: 4),
                   child: Container(
-                    // height: 120,
                     child: Card(
-                      // margin: EdgeInsets.symmetric(horizontal: 8),
-                      // shape: ,
-                      // margin: EdgeInsets.all(4),
                       elevation: 5,
                       color: Colors.purple[50],
                       child: Column(
@@ -95,8 +91,9 @@ class _HomePageState extends State<HomePage> {
                           ),
                           titleBuilder(snapshot.data.docs[index].data()),
                           subtitleBuilder(snapshot.data.docs[index].data()),
-                          Divider(color: Theme.of(context).primaryColor,),
-                          weightTable(snapshot.data.docs[index].data()),
+                          Divider(
+                            color: Theme.of(context).primaryColor,
+                          ),
                         ],
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                       ),
@@ -116,7 +113,7 @@ class _HomePageState extends State<HomePage> {
         Padding(
           padding: const EdgeInsets.only(left: 8.0, top: 4),
           child: Text(
-            data['registration'],
+            data['registrationCity'],
             style: Theme.of(context).textTheme.bodyText2.copyWith(
                 fontWeight: FontWeight.bold,
                 color: Theme.of(context).primaryColor,
@@ -175,106 +172,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceAround,
-        //   children: [
-        //     Wrap(
-        //       alignment: WrapAlignment.start,
-        //       direction: Axis.horizontal,
-        //       children: [
-        //         Row(
-        //           mainAxisAlignment: MainAxisAlignment.start,
-        //           children: [
-        //             Text(
-        //               data['wheeler'].ceil().toString(),
-        //               style: Theme.of(context)
-        //                   .textTheme
-        //                   .bodyText1
-        //                   .copyWith(fontWeight: FontWeight.bold),
-        //             ),
-        //             Text(' wheeler'),
-        //           ],
-        //         ),
-        //         Row(
-        //           mainAxisAlignment: MainAxisAlignment.start,
-        //           children: [
-        //             Text('BW:'),
-        //             Text(data['baseWeight'].ceil().toString()),
-        //           ],
-        //         ),
-        //       ],
-        //     ),
-        //     Wrap(
-        //       alignment: WrapAlignment.start,
-        //       direction: Axis.horizontal,
-        //       children: [
-        //         // Row(
-        //         //   mainAxisAlignment: MainAxisAlignment.start,
-        //         //   children: [
-        //         //     Text('GW:'),
-        //         //     Text(data['grossWeight'].ceil().toString()),
-        //         //   ],
-        //         // ),
-        //         Row(
-        //           mainAxisAlignment: MainAxisAlignment.start,
-        //           children: [
-        //             Text('GW:'),
-        //             Text(data['grossWeight'].ceil().toString()),
-        //           ],
-        //         ),
-        //       ],
-        //     ),
-
-        //     // Text('B.W:'),
-        //     // Text(data['baseWeight'].toString()),
-        //   ],
-        // ),
       ],
-    );
-
-    // );
-  }
-
-  weightTable(Map<String, dynamic> data) {
-    return Container(
-      width: MediaQuery.of(context).size.width / 2.9,
-      child: Column(
-        children: [
-          Row(
-            children: [Text('Weights (Kg)')],
-          ),
-          Row(
-            children: [
-              Text('B:',
-                  style: Theme.of(context).textTheme.caption.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black)),
-              Text(data['baseWeight'].ceil().toString()),
-            ],
-          ),
-          Row(
-            children: [
-              Text('G:',
-                  style: Theme.of(context).textTheme.caption.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black)),
-              Text(data['grossWeight'].ceil().toString()),
-            ],
-          ),
-          Row(
-            children: [
-              Text('C:',
-                  style: Theme.of(context).textTheme.caption.copyWith(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black)),
-              Text(data['cargoWeight'].ceil().toString()),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }
