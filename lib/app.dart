@@ -1,4 +1,4 @@
-import 'package:Kishtum/login_Page.dart';
+import 'package:Kishtum/startup.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         // textTheme: Theme.of(context).textTheme.copyWith(color:)
         
       ),
-      home: LoginPage(),
+      home: StartUp(),
     );
   }
 }

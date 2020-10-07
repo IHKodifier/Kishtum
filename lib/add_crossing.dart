@@ -1,4 +1,5 @@
 import 'package:Kishtum/cargo.dart';
+import 'package:Kishtum/cargo_grid.dart';
 import 'package:Kishtum/constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -36,8 +37,8 @@ class _AddCrossingState extends State<AddCrossing> {
   @override
   void initState() {
     // TODO: implement initState
-    
-      alertDialogAddTerminal = AlertDialog(
+
+    alertDialogAddTerminal = AlertDialog(
       title: Text(' Add Terminal'),
       content: TextField(
         controller: _newDropdownEntryController,
@@ -81,7 +82,9 @@ class _AddCrossingState extends State<AddCrossing> {
       ),
       actions: [
         FlatButton(
-          onPressed: () { Navigator.of(context).pop();},
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
           child: Text('Cancel'),
         ),
         RaisedButton(
@@ -110,7 +113,9 @@ class _AddCrossingState extends State<AddCrossing> {
       ),
       actions: [
         FlatButton(
-          onPressed: () { Navigator.of(context).pop();},
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
           child: Text('Cancel'),
         ),
         RaisedButton(
@@ -140,7 +145,9 @@ class _AddCrossingState extends State<AddCrossing> {
       ),
       actions: [
         FlatButton(
-          onPressed: () { Navigator.of(context).pop();},
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
           child: Text('Cancel'),
         ),
         RaisedButton(
@@ -148,7 +155,7 @@ class _AddCrossingState extends State<AddCrossing> {
             FirebaseFirestore.instance
                 .collection('clearingAgent')
                 .doc()
-                .set({'name':_newDropdownEntryController.text});
+                .set({'name': _newDropdownEntryController.text});
             Navigator.of(context).pop();
           },
           // color: Theme.of(context).primaryColor,
@@ -306,11 +313,12 @@ class _AddCrossingState extends State<AddCrossing> {
                 children: [
                   clearingAgentDropdown(),
                   IconButton(
-                      icon: Icon(
-                        Icons.add,
-                        size: 30,
-                      ),
-                      onPressed: _showMyDialogAddClearingAgent,)
+                    icon: Icon(
+                      Icons.add,
+                      size: 30,
+                    ),
+                    onPressed: _showMyDialogAddClearingAgent,
+                  )
                 ],
               ),
             ],
@@ -372,13 +380,20 @@ class _AddCrossingState extends State<AddCrossing> {
       padding: EdgeInsets.all(8),
       child: Container(
         height: 150,
-        child: Card(
-            child: Column(
-          children: [
-            Text('Cargo'),
-            Text('coming Soon'),
-          ],
-        )),
+        child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context)=>CargoGrid(),
+            ));
+          },
+          child: Card(
+              child: Column(
+            children: [
+              Text('Cargo'),
+              Text('coming Soon'),
+            ],
+          )),
+        ),
       ),
     );
   }

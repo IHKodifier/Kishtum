@@ -1,135 +1,115 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 class CargoGrid extends StatefulWidget {
-  //  List<dynamic> list=[1,2,3,4,5,6,7,8];
-
-  CargoGrid({Key key}) : super(key: key);
   @override
   _CargoGridState createState() => _CargoGridState();
 }
 
 class _CargoGridState extends State<CargoGrid> {
-  List<dynamic> list1 = List<dynamic>();
-  List<dynamic> list2 = List<dynamic>();
-  // initializeLists();
-
-  initializeLists() async {
-    Firebase.initializeApp().then((value) => (value) {
-          try {
-            FirebaseFirestore.instance
-                .collection('items')
-                .orderBy('name')
-                .get()
-                .then((value) => list1.add(value.docs));
-            // if list2list2.clear();
-            // list2.add(Text('i dont count'));
-            print(list1);
-          } catch (e) {
-            print(e.toString());
-          }
-        });
-  }
-
-  initializeFirebase() async {
-    await Firebase.initializeApp();
-    // Firebase.instance = await Firebase.initializeApp();
-  }
-
+  QuerySnapshot querySnapshot;
+  List<dynamic> cargoItemsMap = List<dynamic>();
   @override
   void initState() {
-    // initializeFirebase();
+    // TODO: implement initState
+    getAllCargoList();
     super.initState();
-    initializeLists();
   }
 
   @override
   Widget build(BuildContext context) {
-    // list1 = widget.li
-
     return SafeArea(
       child: Scaffold(
-        body: Column(
-          children: [
-            Flexible(
-              flex: 1,
-              child: GridView.count(
-                crossAxisCount: 6,
-                children: list1
-                    .map(
-                      (e) => GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            list1.remove(e);
-                            // list.add(e);
-                          });
-                        },
+        body: Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                  flex: 3,
+                  child: Center(
+                      child: Text('Selected/Added Cargo Grid Will be here'))),
+              buildAllCargoGrid(context),
+              RaisedButton(
+                onPressed: () {},
+                child: Text('Create New Item'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildAllCargoGrid(BuildContext context) {
+    return Expanded(
+      flex: 5,
+      child: Center(
+        child: GridView.count(
+          crossAxisCount: 3,
+          children: cargoItemsMap.map((e) {
+            return Padding(
+              padding: const EdgeInsets.all(4),
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    // print
+                    cargoItemsMap.remove(e.data());
+                  });
+                },
+                child: Stack(
+                  children: [
+                    ClipOval(
+                      child: Image.network(e.data()['photoUrl']),
+                    ),
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: 80,
+                      ),
+                      child: Positioned(
                         child: Container(
-                          // color: Colors.green[index*100],
-                          height: 50,
-                          child: Card(
-                            child: Text(
-                              e.toString(),
-                            ),
+                          padding: EdgeInsets.all(4),
+                          color: Colors.black.withOpacity(0.5),
+                          child: Text(
+                            e.data()['name'],
+                            style: Theme.of(context)
+                                .textTheme
+                                .headline4
+                                .copyWith(color: Colors.white, fontSize: 12),
                           ),
                         ),
                       ),
-                    )
-                    .toList(),
-              ),
-            ),
-            Container(
-              height: 10,
-              color: Colors.black,
-            ),
-            Flexible(
-              flex: 1,
-              child: GridView.count(
-                crossAxisCount: 6,
-                children: list1.map((e) {
-                  return Card(
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Stack(
-                      children: [
-                        // Positioned(
-                        //   bottom: 0,
-                        //   left: 0,
-                        //   right: 0,
-                        //   child: Image.network(
-                        //     e['photoUrl'],
-                        //     fit: BoxFit.fill,
-                        //   ),
-                        // ),
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          child: Container(
-                              color: Colors.yellow,
-                              child: Text(
-                                e['name'],
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyText2
-                                    .copyWith(fontSize: 12.5),
-                              )),
-                        ),
-                        // BoxFit
-                      ],
-                    ),
-                  );
-                }).toList(),
+                  ],
+                ),
               ),
-            ),
-          ],
+            );
+          }).toList(),
         ),
-        // ],
       ),
     );
-    // );
+  }
+
+  getAllCargoList() async {
+    await FirebaseFirestore.instance.collection('items').get().then((value) {
+      setState(() {
+        cargoItemsMap = value.docs;
+      });
+    });
+
+    // print('\n\n\n printing IHK log query snapshot status\n\n\n' +
+    //     querySnapshot.docs.length.toString() +
+    //     '\n' +
+    //     querySnapshot.docs[0].data().toString());
+
+    print('\n\n\n printing IHK log local variable status\n\n\n' +
+        cargoItemsMap.length.toString() +
+        '\n' +
+        cargoItemsMap[0].data().toString());
+
+    // });
+
+    // });
   }
 }
