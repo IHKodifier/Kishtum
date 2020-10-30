@@ -13,6 +13,7 @@ class AddCrossing extends StatefulWidget {
 
 class _AddCrossingState extends State<AddCrossing> {
   List<String> _gatesList = [];
+  List<dynamic> allcargoList, selectedCargoList;
 
   String _selectedTerminal;
   String _selectedCrossingType;
@@ -27,6 +28,7 @@ class _AddCrossingState extends State<AddCrossing> {
   DocumentReference currentDocRef = null;
   Map<String, dynamic> crossingDataMap = Map<String, dynamic>();
   double _wheels = 0, _baseWeight = 0, _grossWeight = 0, _cargoWeight = 0;
+  QuerySnapshot querySnapshot;
 
   TextEditingController _letterController = TextEditingController();
   TextEditingController _digitController = TextEditingController();
@@ -37,6 +39,9 @@ class _AddCrossingState extends State<AddCrossing> {
   @override
   void initState() {
     // TODO: implement initState
+    allcargoList = List<dynamic>();
+    getAllCargoList();
+    selectedCargoList = List<dynamic>();
 
     alertDialogAddTerminal = AlertDialog(
       title: Text(' Add Terminal'),
@@ -379,18 +384,124 @@ class _AddCrossingState extends State<AddCrossing> {
     return Padding(
       padding: EdgeInsets.all(8),
       child: Container(
-        height: 150,
+        // height: 150,
         child: GestureDetector(
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
-              builder: (context)=>CargoGrid(),
+              builder: (context) => CargoGrid(),
             ));
           },
           child: Card(
               child: Column(
             children: [
-              Text('Cargo'),
-              Text('coming Soon'),
+              Card(
+                elevation: 5,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text('selected cargo'),
+                    ),
+                    LimitedBox(
+                      maxHeight: 200,
+                      child: GridView.count(
+                        crossAxisCount: 3,
+                        children: selectedCargoList.map((e) {
+                          return Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  // print
+                                  selectedCargoList.remove(e);
+                                  allcargoList.add(e);
+                                });
+                              },
+                              child: Stack(
+                                children: [
+                                  Image.network(e.data()['photoUrl']),
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxWidth: 80,
+                                    ),
+                                    child: Positioned(
+                                      child: Container(
+                                        padding: EdgeInsets.all(4),
+                                        color: Colors.black.withOpacity(0.5),
+                                        child: Text(
+                                          e.data()['name'],
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline4
+                                              .copyWith(
+                                                  color: Colors.white,
+                                                  fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Card(
+                child: Column(
+                  children: [
+                    Text('all cargo'),
+                    LimitedBox(
+                      maxHeight: 200,
+                      child: GridView.count(
+                        crossAxisCount: 3,
+                        children: allcargoList.map((e) {
+                          return Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  // print
+                                  allcargoList.remove(e);
+                                  selectedCargoList.add(e);
+                                });
+                              },
+                              child: Stack(
+                                children: [
+                                  Image.network(e.data()['photoUrl']),
+                                  ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxWidth: 80,
+                                    ),
+                                    child: Positioned(
+                                      child: Container(
+                                        padding: EdgeInsets.all(4),
+                                        color: Colors.black.withOpacity(0.5),
+                                        child: Text(
+                                          e.data()['name'],
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headline4
+                                              .copyWith(
+                                                  color: Colors.white,
+                                                  fontSize: 12),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           )),
         ),
@@ -739,6 +850,24 @@ class _AddCrossingState extends State<AddCrossing> {
     );
   }
 
+  getAllCargoList() async {
+    await FirebaseFirestore.instance.collection('items').get().then((value) {
+      setState(() {
+        allcargoList = value.docs;
+      });
+    });
+
+    print('\n\n\n printing IHK log local variable status\n\n\n' +
+        ' length of all cargo list = ' +
+        allcargoList.length.toString() +
+        '\n' +
+        allcargoList[0].data().toString());
+
+    // });
+
+    // });
+  }
+
   saveCrossing() async {
     this.currentDocRef =
         FirebaseFirestore.instance.collection('Crossing').doc();
@@ -766,6 +895,10 @@ class _AddCrossingState extends State<AddCrossing> {
       'logCreatedBy': 'AqleemKhattak@Gmail.com',
     }).then((value) {
       print('record added');
+      for (var i = 0; i < selectedCargoList.length; i++) {
+        this.currentDocRef.collection('cargoItems').add({'itemName':selectedCargoList[i].data()['name'],});
+      }
+
       Navigator.of(context).pop();
     });
   }
