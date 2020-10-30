@@ -384,17 +384,14 @@ class _AddCrossingState extends State<AddCrossing> {
     return Padding(
       padding: EdgeInsets.all(8),
       child: Container(
-        // height: 150,
-        child: GestureDetector(
-          onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => CargoGrid(),
-            ));
-          },
-          child: Card(
+        height: MediaQuery.of(context).size.height*.70,
+        child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Column(
-            children: [
+          children: [
               Card(
+                color: Colors.green[50],
                 elevation: 5,
                 child: Column(
                   children: [
@@ -402,6 +399,8 @@ class _AddCrossingState extends State<AddCrossing> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text('selected cargo'),
                     ),
+                    selectedCargoList.length==0? Container(height: 100,
+                    child: Center(child:Text('List is empty...')),):
                     LimitedBox(
                       maxHeight: 200,
                       child: GridView.count(
@@ -417,14 +416,13 @@ class _AddCrossingState extends State<AddCrossing> {
                                   allcargoList.add(e);
                                 });
                               },
-                              child: Stack(
-                                children: [
-                                  Image.network(e.data()['photoUrl']),
-                                  ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      maxWidth: 80,
-                                    ),
-                                    child: Positioned(
+                              child: Card(
+                                                            elevation: 5,
+                                                            child: Stack(
+                                  children: [
+                                    Image.network(e.data()['photoUrl']),
+                                    Positioned(
+                                      bottom: 0,
                                       child: Container(
                                         padding: EdgeInsets.all(4),
                                         color: Colors.black.withOpacity(0.5),
@@ -439,8 +437,8 @@ class _AddCrossingState extends State<AddCrossing> {
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -451,6 +449,8 @@ class _AddCrossingState extends State<AddCrossing> {
                 ),
               ),
               Card(
+                elevation: 5,
+                color: Colors.pink[100],
                 child: Column(
                   children: [
                     Text('all cargo'),
@@ -469,14 +469,15 @@ class _AddCrossingState extends State<AddCrossing> {
                                   selectedCargoList.add(e);
                                 });
                               },
-                              child: Stack(
-                                children: [
-                                  Image.network(e.data()['photoUrl']),
-                                  ConstrainedBox(
-                                    constraints: BoxConstraints(
-                                      maxWidth: 80,
-                                    ),
-                                    child: Positioned(
+                              child: Card(
+                                // color: Colors.blueGrey.shade50,
+                                elevation: 5,
+                                child: Stack(
+                                  children: [
+                                    Image.network(e.data()['photoUrl']),
+                                    Positioned(
+                                      bottom: 0,
+
                                       child: Container(
                                         padding: EdgeInsets.all(4),
                                         color: Colors.black.withOpacity(0.5),
@@ -491,8 +492,8 @@ class _AddCrossingState extends State<AddCrossing> {
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -502,9 +503,9 @@ class _AddCrossingState extends State<AddCrossing> {
                   ],
                 ),
               ),
-            ],
-          )),
+          ],
         ),
+            )),
       ),
     );
   }
@@ -702,8 +703,8 @@ class _AddCrossingState extends State<AddCrossing> {
 
   regAlphaTextField() {
     return Container(
-        height: 50,
-        width: 50,
+        height: 60,
+        width: 60,
         padding: EdgeInsets.all(0),
         child: TextField(
           // keyboardType: TextInputType.,
@@ -718,7 +719,7 @@ class _AddCrossingState extends State<AddCrossing> {
   regnumericTextField() {
     return Container(
       width: 60,
-      height: 50,
+      height: 60,
       padding: EdgeInsets.all(0),
       child: TextField(
         keyboardType: TextInputType.number,
@@ -896,7 +897,9 @@ class _AddCrossingState extends State<AddCrossing> {
     }).then((value) {
       print('record added');
       for (var i = 0; i < selectedCargoList.length; i++) {
-        this.currentDocRef.collection('cargoItems').add({'itemName':selectedCargoList[i].data()['name'],});
+        this.currentDocRef.collection('cargoItems').add({
+          'itemName': selectedCargoList[i].data()['name'],
+        });
       }
 
       Navigator.of(context).pop();
