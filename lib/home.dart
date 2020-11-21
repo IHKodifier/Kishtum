@@ -1,5 +1,8 @@
+import 'dart:math';
+
 import 'package:Kishtum/add_crossing.dart';
 import 'package:Kishtum/login_page.dart';
+import 'package:Kishtum/utilities.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +14,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<String> cargoItemList = List<String>();
+  String docId;
+
+  // String cargoItems = 'empty list';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,28 +83,51 @@ class _HomePageState extends State<HomePage> {
             return ListView.builder(
               itemCount: snapshot.data.docs.length,
               itemBuilder: (context, index) {
+                this.docId = snapshot.data.docs[index].id;
+                Utilities().printLog(
+                    'The first document fetched has id = ${this.docId}');
+
+                // awaitCargoItems();
                 return Padding(
                   padding: const EdgeInsets.only(left: 8, right: 8, top: 4),
                   child: Container(
-                    child: Card(
-                      elevation: 5,
-                      color: Colors.purple[50],
-                      child: Column(
+                    child: ExpansionTile(
+                        onExpansionChanged: (val){setState(() {
+                          
+                        });},
+                        title:
+                            registrationPlate(snapshot.data.docs[index].data()),
                         children: [
-                          leadingBuilder(snapshot.data.docs[index].data()),
-                          Divider(
-                            height: 1,
-                            color: Theme.of(context).primaryColor,
+                          Column(
+                            children: [
+                              clearingAgentName(
+                                  snapshot.data.docs[index].data()),
+                              driverName(snapshot.data.docs[index].data()),
+                              cargoList(snapshot.data.docs[index].data()),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  IconButton(
+                                      icon: Icon(
+                                        Icons.share,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                      onPressed: () {}),
+                                  IconButton(
+                                      icon: Icon(Icons.edit),
+                                      color: Theme.of(context).primaryColor,
+                                      onPressed: () {}),
+                                  IconButton(
+                                      icon: Icon(Icons.delete),
+                                      color: Theme.of(context).primaryColor,
+                                      onPressed: () {}),
+                                ],
+                              ),
+                            ],
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
                           ),
-                          titleBuilder(snapshot.data.docs[index].data()),
-                          subtitleBuilder(snapshot.data.docs[index].data()),
-                          Divider(
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ],
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                      ),
-                    ),
+                        ]),
                   ),
                 );
               },
@@ -106,56 +136,119 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
-  leadingBuilder(Map<String, dynamic> data) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0, top: 4),
-          child: Text(
-            data['registrationCity'],
-            style: Theme.of(context).textTheme.bodyText2.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).primaryColor,
-                fontSize: 12),
-          ),
-        ),
-        Text(
-          '${data['wheeler'].toString()} Wheeler',
-          style: Theme.of(context).textTheme.bodyText2.copyWith(
-              fontWeight: FontWeight.bold, color: Colors.black54, fontSize: 12),
-        ),
-        Text(
-          '${data['crossingGate']}',
-          style: Theme.of(context).textTheme.bodyText2.copyWith(
-              fontWeight: FontWeight.bold, color: Colors.black54, fontSize: 12),
-        ),
-      ],
-    );
-  }
-
-  titleBuilder(Map<String, dynamic> data) {
+  clearingAgentName(Map<String, dynamic> data) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(4.0),
       child: Text(
         data['clearingAgent'],
         style: Theme.of(context).textTheme.bodyText2.copyWith(
-            fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 14),
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).primaryColor,
+            fontSize: 16),
       ),
     );
   }
 
-  subtitleBuilder(Map<String, dynamic> data) {
+  cargoList(Map<String, dynamic> data) {
+    return FutureBuilder(
+        future: FirebaseFirestore.instance
+            .collection('Crossing')
+            .doc(this.docId)
+            .collection('cargoItems')
+            .get(),
+        builder: (context, snapshot) { 
+          // return Padding(
+          //   padding: const EdgeInsets.all(4.0),
+          //   child: Text(
+          //     data['clearingAgent'],
+          //     style: Theme.of(context).textTheme.bodyText2.copyWith(
+          //         fontWeight: FontWeight.bold,
+          //         color: Theme.of(context).primaryColor,
+          //         fontSize: 16),
+          //   ),
+          // );
+          // 11ghulam haider =0302 504 7978
+          if (!snapshot.hasData) {
+            return Center(child: CircularProgressIndicator());
+          } else {
+            
+           
+            return LimitedBox(
+              maxHeight: 200,
+                          child: GridView.count(
+                crossAxisCount: 5,
+                children:cargoGridChildren(snapshot.data.docs)
+              ),
+            );
+          }
+        });
+  }
+  List<Widget> cargoGridChildren (List<QueryDocumentSnapshot> docs){
+
+    return docs.map((e){return Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: GestureDetector(
+                   
+                    child: Card(  
+                        // color: Colors.blueGrey.shade50,
+                        elevation: 5,
+                        child: Container(
+                            padding: EdgeInsets.all(4),
+                            // color: Colors.black.withOpacity(0.5),
+                            child: Center(child: Text(e.data()['itemName']))
+                          ),
+                      ),
+                  ),
+                );}).toList();
+  }
+
+  registrationPlate(Map<String, dynamic> data) {
+    return Card(
+      elevation: 5,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Text(
+              data['registrationNumber'],
+              style: Theme.of(context).textTheme.bodyText2.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                  fontSize: 30),
+            ),
+            Text(
+              data['registrationCity'],
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText2
+                  .copyWith(color: Colors.black87, fontSize: 16),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  driverName(Map<String, dynamic> data) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 8.0),
-          child: Text(
-            data['driverName'],
-            style: Theme.of(context).textTheme.bodyText2,
-          ),
+        Row(
+          children: [
+            Icon(
+              Icons.account_circle,
+              size: 25,
+              color: Theme.of(context).primaryColor,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0),
+              child: Text(
+                data['driverName'],
+                style: Theme.of(context).textTheme.bodyText2,
+              ),
+            ),
+          ],
         ),
         Row(
           children: [
@@ -164,11 +257,13 @@ class _HomePageState extends State<HomePage> {
               child: Icon(
                 Icons.phone_android,
                 size: 18,
+                color: Theme.of(context).primaryColor,
               ),
             ),
             Padding(
               padding: const EdgeInsets.only(left: 4.0, top: 8),
-              child: Text('${data['driverContact']} '),
+              child: Text('${data['driverContact']} ',
+                  style: Theme.of(context).textTheme.bodyText2.copyWith()),
             ),
           ],
         ),

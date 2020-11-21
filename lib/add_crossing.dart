@@ -384,12 +384,12 @@ class _AddCrossingState extends State<AddCrossing> {
     return Padding(
       padding: EdgeInsets.all(8),
       child: Container(
-        height: MediaQuery.of(context).size.height*.70,
+        height: MediaQuery.of(context).size.height * .70,
         child: Card(
             child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-          children: [
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
               Card(
                 color: Colors.green[50],
                 elevation: 5,
@@ -399,52 +399,56 @@ class _AddCrossingState extends State<AddCrossing> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text('selected cargo'),
                     ),
-                    selectedCargoList.length==0? Container(height: 100,
-                    child: Center(child:Text('List is empty...')),):
-                    LimitedBox(
-                      maxHeight: 200,
-                      child: GridView.count(
-                        crossAxisCount: 3,
-                        children: selectedCargoList.map((e) {
-                          return Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  // print
-                                  selectedCargoList.remove(e);
-                                  allcargoList.add(e);
-                                });
-                              },
-                              child: Card(
-                                                            elevation: 5,
-                                                            child: Stack(
-                                  children: [
-                                    Image.network(e.data()['photoUrl']),
-                                    Positioned(
-                                      bottom: 0,
-                                      child: Container(
-                                        padding: EdgeInsets.all(4),
-                                        color: Colors.black.withOpacity(0.5),
-                                        child: Text(
-                                          e.data()['name'],
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headline4
-                                              .copyWith(
-                                                  color: Colors.white,
-                                                  fontSize: 12),
-                                        ),
+                    selectedCargoList.length == 0
+                        ? Container(
+                            height: 100,
+                            child: Center(child: Text('List is empty...')),
+                          )
+                        : LimitedBox(
+                            maxHeight: 200,
+                            child: GridView.count(
+                              crossAxisCount: 3,
+                              children: selectedCargoList.map((e) {
+                                return Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        // print
+                                        selectedCargoList.remove(e);
+                                        allcargoList.add(e);
+                                      });
+                                    },
+                                    child: Card(
+                                      elevation: 5,
+                                      child: Stack(
+                                        children: [
+                                          Image.network(e.data()['photoUrl']),
+                                          Positioned(
+                                            bottom: 0,
+                                            child: Container(
+                                              padding: EdgeInsets.all(4),
+                                              color:
+                                                  Colors.black.withOpacity(0.5),
+                                              child: Text(
+                                                e.data()['name'],
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .headline4
+                                                    .copyWith(
+                                                        color: Colors.white,
+                                                        fontSize: 12),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
+                                  ),
+                                );
+                              }).toList(),
                             ),
-                          );
-                        }).toList(),
-                      ),
-                    ),
+                          ),
                   ],
                 ),
               ),
@@ -477,7 +481,6 @@ class _AddCrossingState extends State<AddCrossing> {
                                     Image.network(e.data()['photoUrl']),
                                     Positioned(
                                       bottom: 0,
-
                                       child: Container(
                                         padding: EdgeInsets.all(4),
                                         color: Colors.black.withOpacity(0.5),
@@ -503,9 +506,9 @@ class _AddCrossingState extends State<AddCrossing> {
                   ],
                 ),
               ),
-          ],
-        ),
-            )),
+            ],
+          ),
+        )),
       ),
     );
   }
@@ -718,7 +721,7 @@ class _AddCrossingState extends State<AddCrossing> {
 
   regnumericTextField() {
     return Container(
-      width: 60,
+      width: 75,
       height: 60,
       padding: EdgeInsets.all(0),
       child: TextField(
